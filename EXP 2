@@ -1,0 +1,122 @@
+// Class to model a Video
+class Video {
+    private String title;
+    private boolean checkedOut;
+    private double averageRating;
+    private int ratingCount;
+    
+    public Video(String title) {
+        this.title = title;
+        this.checkedOut = false;
+        this.averageRating = 0.0;
+        this.ratingCount = 0;
+    }
+    
+    public String getTitle() {
+        return title;
+    }
+    
+    public boolean isCheckedOut() {
+        return checkedOut;
+    }
+    
+    public void checkOut() {
+        checkedOut = true;
+    }
+    
+    public void returnVideo() {
+        checkedOut = false;
+    }
+    
+    public void receiveRating(int rating) {
+        averageRating = (averageRating * ratingCount + rating) / (++ratingCount);
+    }
+    
+    public String toString() {
+        return "Title: " + title + ", Checked Out: " + checkedOut + ", Average Rating: " + averageRating;
+    }
+}
+
+// Class to model the Video Store
+class VideoStore {
+    private Video[] inventory;
+    private int count;
+    
+    public VideoStore() {
+        inventory = new Video[10];
+        count = 0;
+    }
+    
+    public void addVideo(String title) {
+        if (count < inventory.length) {
+            inventory[count++] = new Video(title);
+        } else {
+            System.out.println("Inventory is full!");
+        }
+    }
+    
+    public void checkOut(String title) {
+        for (int i = 0; i < count; i++) {
+            if (inventory[i].getTitle().equals(title) && !inventory[i].isCheckedOut()) {
+                inventory[i].checkOut();
+                System.out.println(title + " has been checked out.");
+                return;
+            }
+        }
+        System.out.println(title + " is not available.");
+    }
+    
+    public void returnVideo(String title) {
+        for (int i = 0; i < count; i++) {
+            if (inventory[i].getTitle().equals(title) && inventory[i].isCheckedOut()) {
+                inventory[i].returnVideo();
+                System.out.println(title + " has been returned.");
+                return;
+            }
+        }
+        System.out.println(title + " was not checked out.");
+    }
+    
+    public void receiveRating(String title, int rating) {
+        for (int i = 0; i < count; i++) {
+            if (inventory[i].getTitle().equals(title)) {
+                inventory[i].receiveRating(rating);
+                System.out.println("Rating added for " + title);
+                return;
+            }
+        }
+        System.out.println("Video not found.");
+    }
+    
+    public void listInventory() {
+        System.out.println("Current Inventory:");
+        for (int i = 0; i < count; i++) {
+            System.out.println(inventory[i]);
+        }
+    }
+}
+
+// Launcher class to test functionality
+public class VideoStoreLauncher {
+    public static void main(String[] args) {
+        VideoStore store = new VideoStore();
+        
+        // Adding videos
+        store.addVideo("The Matrix");
+        store.addVideo("Godfather II");
+        store.addVideo("Star Wars Episode IV: A New Hope");
+        
+        // Adding ratings
+        store.receiveRating("The Matrix", 5);
+        store.receiveRating("Godfather II", 4);
+        store.receiveRating("Star Wars Episode IV: A New Hope", 5);
+        
+        // Renting and returning videos
+        store.checkOut("The Matrix");
+        store.checkOut("Godfather II");
+        store.returnVideo("The Matrix");
+        
+        // Listing inventory after renting out "Godfather II"
+        store.listInventory();
+    }
+}
